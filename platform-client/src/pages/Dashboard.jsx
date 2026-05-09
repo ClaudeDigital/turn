@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { api } from '../api'
-import { useAuth } from '../App'
-import { Trophy, Plus, ExternalLink, Settings, LogOut, Clock, CheckCircle, ChevronRight } from 'lucide-react'
+import { useAuth, useTheme } from '../App'
+import { Trophy, Plus, ExternalLink, Settings, LogOut, Clock, CheckCircle, ChevronRight, Sun, Moon } from 'lucide-react'
 
 export default function Dashboard() {
   const { user, logout } = useAuth()
+  const { dark, toggle: toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [tournaments, setTournaments] = useState([])
   const [orders, setOrders] = useState([])
@@ -27,8 +28,11 @@ export default function Dashboard() {
         <Link to="/" className="font-bebas text-xl text-white tracking-widest">
           TURN<span className="text-amber-500">PLATFORM</span>
         </Link>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <span className="text-gray-500 text-sm hidden md:block">{user?.name}</span>
+          <button onClick={toggleTheme} className="p-1.5 text-gray-500 hover:text-amber-400 rounded-lg transition-colors">
+            {dark ? <Sun size={16}/> : <Moon size={16}/>}
+          </button>
           <button onClick={() => { logout(); navigate('/') }} className="flex items-center gap-1.5 text-gray-500 hover:text-red-400 text-sm transition-colors">
             <LogOut size={15}/> Dil
           </button>

@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { api } from '../api'
-import { useAuth } from '../App'
+import { useAuth, useTheme } from '../App'
 import {
   Home, Users, Calendar, Shuffle, Download, Settings, LogOut,
   Plus, X, Check, RefreshCw, Save, Pencil, Trash2, AlertCircle,
-  ChevronDown, ExternalLink, Trophy, Shield, ArrowLeft
+  ChevronDown, ExternalLink, Trophy, ArrowLeft, Sun, Moon
 } from 'lucide-react'
 
 /* ── Helpers ─────────────────────────────────────────────────── */
@@ -364,6 +364,7 @@ const TABS = [
 export default function TournamentAdmin() {
   const { slug } = useParams()
   const { user, logout } = useAuth()
+  const { dark, toggle: toggleTheme } = useTheme()
   const navigate = useNavigate()
   const [tab, setTab] = useState('ballina')
   const [tournament, setTournament] = useState(null)
@@ -413,6 +414,19 @@ export default function TournamentAdmin() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
+      {/* ── Mobile Topbar ── */}
+      <div className="md:hidden fixed top-0 left-0 right-0 z-40 bg-[#0d0d0d] border-b border-[#1a1a1a] flex items-center justify-between px-4 py-3">
+        <span className="font-bebas text-base text-white tracking-wider truncate max-w-[70%]">{t?.name || 'TURNIRI'}</span>
+        <div className="flex items-center gap-2">
+          <a href={`/t/${slug}`} target="_blank" rel="noreferrer" className="p-1.5 text-gray-500 hover:text-amber-400 rounded-lg transition-all">
+            <ExternalLink size={16} />
+          </a>
+          <button onClick={toggleTheme} className="p-1.5 text-gray-500 hover:text-amber-400 rounded-lg transition-all">
+            {dark ? <Sun size={16} /> : <Moon size={16} />}
+          </button>
+        </div>
+      </div>
+
       {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex fixed left-0 top-0 h-full w-64 bg-[#0d0d0d] border-r border-[#1a1a1a] flex-col z-40">
         <div className="p-5 border-b border-[#1a1a1a]">
@@ -445,6 +459,10 @@ export default function TournamentAdmin() {
               </div>
             </div>
           )}
+          <button onClick={toggleTheme}
+            className="w-full flex items-center gap-2 px-4 py-2 mb-1 text-sm text-gray-400 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+            {dark ? <><Sun size={16}/> Modu i Ndritshëm</> : <><Moon size={16}/> Modu i Errët</>}
+          </button>
           <button onClick={() => { logout(); navigate('/') }}
             className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all">
             <LogOut size={16} /> Dil
@@ -453,7 +471,7 @@ export default function TournamentAdmin() {
       </aside>
 
       {/* ── Main Content ── */}
-      <div className="md:ml-64 pb-24 md:pb-8">
+      <div className="md:ml-64 pb-24 md:pb-8 pt-[52px] md:pt-0">
         <TabContent tab={tab} slug={slug} tournament={t} teams={teams} rounds={rounds} matches={matches} onRefresh={loadAll} />
       </div>
 
@@ -541,7 +559,7 @@ function TabBallina({ tournament, teams, rounds, matches, slug }) {
 function TabEkipet({ slug, teams, tournament, onRefresh }) {
   const [showAdd, setShowAdd] = useState(false)
   const [newName, setNewName] = useState('')
-  const [newColor, setNewColor] = useState(COLORS[0])
+  const [newColor, setNewColor] = useState(() => COLORS[Math.floor(Math.random() * COLORS.length)])
   const [editTeam, setEditTeam] = useState(null)
   const [saving, setSaving] = useState(false)
 
@@ -550,7 +568,9 @@ function TabEkipet({ slug, teams, tournament, onRefresh }) {
     setSaving(true)
     try {
       await api.teams.create(slug, { name: newName.trim(), color: newColor })
-      setNewName(''); setShowAdd(false)
+      setNewName('')
+      setNewColor(COLORS[Math.floor(Math.random() * COLORS.length)])
+      setShowAdd(false)
       await onRefresh()
       toast('Ekipi u shtua!')
     } catch (e) { toast(e.message, 'err') } finally { setSaving(false) }
