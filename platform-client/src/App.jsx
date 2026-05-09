@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Sun, Moon } from 'lucide-react'
 import { api, clearToken, setToken } from './api'
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -32,6 +33,29 @@ function ThemeProvider({ children }) {
   return <ThemeCtx.Provider value={{ dark, toggle }}>{children}</ThemeCtx.Provider>
 }
 
+/* ── Global floating theme toggle ──────────────────────────── */
+function FloatingThemeBtn() {
+  const { dark, toggle } = useTheme()
+  return (
+    <button
+      onClick={toggle}
+      title={dark ? 'Modu i Ndritshëm' : 'Modu i Errët'}
+      style={{ position: 'fixed', bottom: '24px', right: '24px', zIndex: 9999,
+               width: '44px', height: '44px', borderRadius: '50%',
+               background: dark ? '#f59e0b' : '#1e293b',
+               color: dark ? '#000' : '#f8fafc',
+               border: 'none', cursor: 'pointer',
+               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               boxShadow: '0 4px 12px rgba(0,0,0,0.4)',
+               transition: 'background 0.2s, transform 0.1s' }}
+      onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      {dark ? <Sun size={20}/> : <Moon size={20}/>}
+    </button>
+  )
+}
+
 /* ── Auth ──────────────────────────────────────────────────── */
 export const AuthCtx = createContext(null)
 export function useAuth() { return useContext(AuthCtx) }
@@ -57,6 +81,7 @@ function Private({ children }) {
 export default function App() {
   return (
     <ThemeProvider>
+      <FloatingThemeBtn />
       <BrowserRouter>
         <AuthProvider>
           <Routes>
