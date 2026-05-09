@@ -24,10 +24,19 @@ app.use('/api/telegram',    require('./routes/telegram-webhook'));
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
 
 const DIST = path.join(__dirname, '../public');
-app.use(express.static(DIST));
+app.use(express.static(DIST, {
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    }
+  }
+}));
 app.get('*', (_req, res) => {
   const idx = path.join(DIST, 'index.html');
-  if (fs.existsSync(idx)) return res.sendFile(idx);
+  if (fs.existsSync(idx)) {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.sendFile(idx);
+  }
   res.status(503).send('Frontend duke u ndërtuar...');
 });
 
