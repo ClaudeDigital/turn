@@ -2,7 +2,21 @@
 @tailwind components;
 @tailwind utilities;
 
-body { font-family: 'DM Sans', sans-serif; background: #0f172a; color: #f1f5f9; }
+@layer base {
+  body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; color: #f1f5f9; }
+}
+
 .font-bebas { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.05em; }
-::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #1e293b; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-input, select, textarea { outline: none; }
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fade-in 0.35s ease-out both; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: #111; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+select { appearance: none; }
+input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.5); }
